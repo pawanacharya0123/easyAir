@@ -10,16 +10,14 @@ const getAirportCode = (fullString) => {
   return match ? match[1] : null;
 };
 
-const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
+const OneWayFlightSearchForm = ({
+  travelClass,
+  setFlightItineraries,
+  formData,
+  setFormData,
+}) => {
   // const token = useToken();
   const token = useContext(TokenContext);
-
-  const [formData, setFormData] = useState({
-    origin: "",
-    destination: "",
-    departureDate: "",
-    travelers: 1,
-  });
 
   const originSuggestions = useAirportSuggestions(formData.origin, token);
   const destinationSuggestions = useAirportSuggestions(
@@ -68,24 +66,56 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
       )}
       <form
         onSubmit={handleSearch}
-        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-8xl mx-auto space-y-4 md:space-y-0 md:grid md:grid-cols-4 gap-4"
+        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-8xl mx-auto space-y-4 md:space-y-0 md:grid md:grid-cols-5 gap-4"
       >
-        <LocationInputField
-          label="Leaving from"
-          name="origin"
-          value={formData.origin}
-          onChange={handleChange}
-          onSelect={handleSelect}
-          suggestions={originSuggestions}
-        />
-        <LocationInputField
-          label="Going to"
-          name="destination"
-          value={formData.destination}
-          onChange={handleChange}
-          onSelect={handleSelect}
-          suggestions={destinationSuggestions}
-        />
+        <div className="relative col-span-3 flex items-start space-x-2">
+          <LocationInputField
+            label="Leaving from"
+            name="origin"
+            value={formData.origin}
+            onChange={handleChange}
+            onSelect={handleSelect}
+            suggestions={originSuggestions}
+          />
+
+          <div className="w-fit flex items-end justify-center pb-1 mt-6">
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({
+                  ...prev,
+                  origin: prev.destination,
+                  destination: prev.origin,
+                }))
+              }
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+              title="Swap Locations"
+            >
+              <svg
+                className="w-5 h-5 text-gray-700"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 4v6h6M20 20v-6h-6M4 10l6 6M20 14l-6-6"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <LocationInputField
+            label="Going to"
+            name="destination"
+            value={formData.destination}
+            onChange={handleChange}
+            onSelect={handleSelect}
+            suggestions={destinationSuggestions}
+          />
+        </div>
 
         <div className="col-span-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -25,10 +25,10 @@ const LocationInputField = ({
         onBlur={() => setTimeout(() => setFocused(false), 150)} // allow click to register
         placeholder="City or airport"
         autoComplete="off"
-        className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
       />
       {focused && suggestions.length > 0 && (
-        <ul className="absolute z-10 bg-white w-full max-h-60 overflow-y-auto border border-gray-200 rounded-xl mt-1 shadow-lg text-sm ">
+        <ul className="absolute z-10 bg-white w-full max-h-60 overflow-y-auto border border-gray-200 rounded-xl mt-1 shadow-lg text-xs ">
           {suggestions.map((airport) => (
             <li
               key={airport.id}
