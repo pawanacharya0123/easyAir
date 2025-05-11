@@ -84,7 +84,7 @@ const TabsContainer = () => {
         </div>
       </div>
       <div className="pt-4">
-        {flightItineraries.data && (
+        {flightItineraries && flightItineraries.data && (
           <div className="space-y-6">
             {flightItineraries.data.map((offer, index) => (
               <div

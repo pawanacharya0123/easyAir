@@ -5,7 +5,12 @@ import LocationInputField from "./sub-component/LocationInputField";
 const clientId = import.meta.env.VITE_AMADEUS_CLIENT_ID;
 const clientSecret = import.meta.env.VITE_AMADEUS_CLIENT_SECRET;
 
-const RoundTripFlightSearchForm = ({ travelClass }) => {
+const getAirportCode = (fullString) => {
+  const match = fullString.match(/\(([^)]+)\)/);
+  return match ? match[1] : null;
+};
+
+const RoundTripFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
   const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
     origin: "",
@@ -63,7 +68,6 @@ const RoundTripFlightSearchForm = ({ travelClass }) => {
       } else {
         setDestinationSuggestions(result.data || []);
       }
-      console.log(result);
     } catch (err) {
       console.error(`Error fetching ${field} airports:`, err);
     }
@@ -97,11 +101,39 @@ const RoundTripFlightSearchForm = ({ travelClass }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log(formData);
+    console.log({ ...formData, travelClass: travelClass });
+    const originLocationCode = getAirportCode(formData.origin);
+    const destinationLocationCode = getAirportCode(formData.destination);
+    const adults = formData.travelers;
+    const departureDate = formData.departureDate;
+    const returnDate = formData.returnDate;
+    const currencyCode = "CAD";
+
+    const fetchItineraries = async () => {
+      try {
+        const response = await fetch(
+          `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originLocationCode}&destinationLocationCode=${destinationLocationCode}&departureDate=${departureDate}&returnDate=${returnDate}&adults=${adults}&travelClass=${travelClass}&currencyCode=${currencyCode}&max=25`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await response.json();
+        console.log(result);
+        setFlightItineraries(result);
+      } catch (err) {
+        console.error(`Error fetching ${field} airports:`, err);
+      }
+    };
+    fetchItineraries();
   };
 
   return (
-    <form className="bg-white p-6 rounded-2xl shadow-md w-full max-w-6xl mx-auto space-y-4 md:space-y-0 md:grid md:grid-cols-5 gap-4">
+    <form
+      onSubmit={handleSearch}
+      className="bg-white p-6 rounded-2xl shadow-md w-full max-w-6xl mx-auto space-y-4 md:space-y-0 md:grid md:grid-cols-5 gap-4"
+    >
       <LocationInputField
         label="Leaving from"
         name="origin"

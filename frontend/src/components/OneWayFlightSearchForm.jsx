@@ -18,6 +18,7 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
     departureDate: "",
     travelers: 1,
   });
+  const [loading, setLoading] = useState(false);
   const [originSuggestions, setOriginSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 
@@ -100,7 +101,9 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    setLoading(true);
     console.log({ ...formData, travelClass: travelClass });
+
     const originLocationCode = getAirportCode(formData.origin);
     const destinationLocationCode = getAirportCode(formData.destination);
     const adults = formData.travelers;
@@ -109,8 +112,9 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
 
     const fetchItineraries = async () => {
       try {
+        setFlightItineraries([]);
         const response = await fetch(
-          `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originLocationCode}&destinationLocationCode=${destinationLocationCode}&departureDate=${departureDate}&adults=${adults}&travelClass=${travelClass}&currencyCode=${currencyCode}`,
+          `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originLocationCode}&destinationLocationCode=${destinationLocationCode}&departureDate=${departureDate}&adults=${adults}&travelClass=${travelClass}&currencyCode=${currencyCode}&max=25`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -122,72 +126,81 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
         setFlightItineraries(result);
       } catch (err) {
         console.error(`Error fetching ${field} airports:`, err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchItineraries();
   };
 
   return (
-    <form
-      onSubmit={handleSearch}
-      className="bg-white p-6 rounded-2xl shadow-md w-full max-w-8xl mx-auto space-y-4 md:space-y-0 md:grid md:grid-cols-4 gap-4"
-    >
-      <LocationInputField
-        label="Leaving from"
-        name="origin"
-        value={formData.origin}
-        onChange={handleChange}
-        onSelect={handleSelect}
-        suggestions={originSuggestions}
-      />
-      <LocationInputField
-        label="Going to"
-        name="destination"
-        value={formData.destination}
-        onChange={handleChange}
-        onSelect={handleSelect}
-        suggestions={destinationSuggestions}
-      />
-
-      <div className="col-span-1">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Departure
-        </label>
-        <input
-          type="date"
-          name="departureDate"
-          min={new Date().toISOString().split("T")[0]}
-          value={formData.departureDate}
+    <div className="relative">
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 rounded-2xl pointer-events-none">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-blue-500 border-gray-200"></div>
+        </div>
+      )}
+      <form
+        onSubmit={handleSearch}
+        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-8xl mx-auto space-y-4 md:space-y-0 md:grid md:grid-cols-4 gap-4"
+      >
+        <LocationInputField
+          label="Leaving from"
+          name="origin"
+          value={formData.origin}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-          required
+          onSelect={handleSelect}
+          suggestions={originSuggestions}
         />
-      </div>
-
-      <div className="col-span-1 flex flex-col justify-end">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Travelers
-        </label>
-        <input
-          type="number"
-          name="travelers"
-          min="1"
-          value={formData.travelers}
+        <LocationInputField
+          label="Going to"
+          name="destination"
+          value={formData.destination}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-          required
+          onSelect={handleSelect}
+          suggestions={destinationSuggestions}
         />
-      </div>
 
-      <div className="md:col-span-5 flex justify-center md:justify-end">
-        <button
-          type="submit"
-          className="mt-4 md:mt-0 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full md:w-auto"
-        >
-          Find Flights
-        </button>
-      </div>
-    </form>
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Departure
+          </label>
+          <input
+            type="date"
+            name="departureDate"
+            min={new Date().toISOString().split("T")[0]}
+            value={formData.departureDate}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
+
+        <div className="col-span-1 flex flex-col justify-end">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Travelers
+          </label>
+          <input
+            type="number"
+            name="travelers"
+            min="1"
+            value={formData.travelers}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
+
+        <div className="md:col-span-5 flex justify-center md:justify-end">
+          <button
+            type="submit"
+            className="mt-4 md:mt-0 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full md:w-auto"
+          >
+            Find Flights
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
