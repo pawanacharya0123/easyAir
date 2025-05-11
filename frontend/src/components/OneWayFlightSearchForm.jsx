@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import LocationInputField from "./sub-component/LocationInputField";
 import useToken from "../hooks/useToken";
 import useAirportSuggestions from "../hooks/useAirportSuggestions";
 import useFlightSearch from "../hooks/useFlightSearch";
+import { TokenContext } from "../hooks/TokenContext";
 
 const getAirportCode = (fullString) => {
   const match = fullString.match(/\(([^)]+)\)/);
@@ -10,7 +11,8 @@ const getAirportCode = (fullString) => {
 };
 
 const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
-  const token = useToken();
+  // const token = useToken();
+  const token = useContext(TokenContext);
 
   const [formData, setFormData] = useState({
     origin: "",
