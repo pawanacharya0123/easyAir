@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useDebounce } from "use-debounce";
+import React, { useState } from "react";
 import LocationInputField from "./sub-component/LocationInputField";
-
-const clientId = import.meta.env.VITE_AMADEUS_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_AMADEUS_CLIENT_SECRET;
+import useToken from "../hooks/useToken";
+import useAirportSuggestions from "../hooks/useAirportSuggestions";
+import useFlightSearch from "../hooks/useFlightSearch";
 
 const getAirportCode = (fullString) => {
   const match = fullString.match(/\(([^)]+)\)/);
@@ -11,78 +10,21 @@ const getAirportCode = (fullString) => {
 };
 
 const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
-  const [token, setToken] = useState("");
+  const token = useToken();
+
   const [formData, setFormData] = useState({
     origin: "",
     destination: "",
     departureDate: "",
     travelers: 1,
   });
-  const [loading, setLoading] = useState(false);
-  const [originSuggestions, setOriginSuggestions] = useState([]);
-  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 
-  const [debouncedOrigin] = useDebounce(formData.origin, 300);
-  const [debouncedDestination] = useDebounce(formData.destination, 300);
-
-  useEffect(() => {
-    const getAccessToken = async () => {
-      const response = await fetch(
-        "https://test.api.amadeus.com/v1/security/oauth2/token",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            grant_type: "client_credentials",
-            client_id: clientId,
-            client_secret: clientSecret,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("Access Token:", data.access_token);
-      setToken(data.access_token);
-    };
-
-    getAccessToken();
-  }, []);
-
-  const fetchAirports = async (field, keyword) => {
-    if (!keyword || !field) return;
-    try {
-      const response = await fetch(
-        `https://test.api.amadeus.com/v1/reference-data/locations?subType=AIRPORT&keyword=${keyword}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const result = await response.json();
-      if (field === "origin") {
-        setOriginSuggestions(result.data || []);
-      } else {
-        setDestinationSuggestions(result.data || []);
-      }
-    } catch (err) {
-      console.error(`Error fetching ${field} airports:`, err);
-    }
-  };
-
-  useEffect(() => {
-    if (debouncedOrigin) {
-      fetchAirports("origin", debouncedOrigin);
-    }
-  }, [debouncedOrigin]);
-
-  useEffect(() => {
-    if (debouncedDestination) {
-      fetchAirports("destination", debouncedDestination);
-    }
-  }, [debouncedDestination]);
+  const originSuggestions = useAirportSuggestions(formData.origin, token);
+  const destinationSuggestions = useAirportSuggestions(
+    formData.destination,
+    token
+  );
+  const { loading, searchFlights } = useFlightSearch(token);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -93,44 +35,26 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
       ...formData,
       [field]: `${airport.name} (${airport.iataCode})`,
     });
-
-    field === "origin"
-      ? setOriginSuggestions([])
-      : setDestinationSuggestions([]);
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    setLoading(true);
     console.log({ ...formData, travelClass: travelClass });
 
     const originLocationCode = getAirportCode(formData.origin);
     const destinationLocationCode = getAirportCode(formData.destination);
-    const adults = formData.travelers;
-    const departureDate = formData.departureDate;
-    const currencyCode = "CAD";
 
-    const fetchItineraries = async () => {
-      try {
-        setFlightItineraries([]);
-        const response = await fetch(
-          `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originLocationCode}&destinationLocationCode=${destinationLocationCode}&departureDate=${departureDate}&adults=${adults}&travelClass=${travelClass}&currencyCode=${currencyCode}&max=25`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const result = await response.json();
-        console.log(result);
-        setFlightItineraries(result);
-      } catch (err) {
-        console.error(`Error fetching ${field} airports:`, err);
-      } finally {
-        setLoading(false);
-      }
+    const params = {
+      originCode: originLocationCode,
+      destinationCode: destinationLocationCode,
+      departureDate: formData.departureDate,
+      travelers: formData.travelers,
+      travelClass,
+      currencyCode: "CAD",
     };
-    fetchItineraries();
+
+    const result = await searchFlights(params);
+    setFlightItineraries(result);
   };
 
   return (

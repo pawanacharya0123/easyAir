@@ -1,35 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OneWayFlightSearchForm from "./OneWayFlightSearchForm";
 import RoundTripFlightSearchForm from "./RoundTripFlightSearchForm";
+
+function formatDateTime(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+function formatDuration(isoDuration) {
+  const regex = /PT(?:(\d+)H)?(?:(\d+)M)?/;
+  const matches = isoDuration.match(regex);
+  const hours = matches[1] ? parseInt(matches[1]) : 0;
+  const minutes = matches[2] ? parseInt(matches[2]) : 0;
+
+  let result = "";
+  if (hours > 0) result += `${hours} hour${hours > 1 ? "s" : ""} `;
+  if (minutes > 0) result += `${minutes} minute${minutes > 1 ? "s" : ""}`;
+  return result.trim();
+}
+
+const tabs = [
+  { key: "one-way", label: "One Way" },
+  { key: "round-trip", label: "Round Trip" },
+];
 
 const TabsContainer = () => {
   const [activeTab, setActiveTab] = useState("one-way");
   const [travelClass, setTravelClass] = useState("ECONOMY");
   const [flightItineraries, setFlightItineraries] = useState(null);
 
-  const tabs = [
-    { key: "one-way", label: "One Way" },
-    { key: "round-trip", label: "Round Trip" },
-  ];
-  function formatDuration(isoDuration) {
-    const regex = /PT(?:(\d+)H)?(?:(\d+)M)?/;
-    const matches = isoDuration.match(regex);
-    const hours = matches[1] ? parseInt(matches[1]) : 0;
-    const minutes = matches[2] ? parseInt(matches[2]) : 0;
-
-    let result = "";
-    if (hours > 0) result += `${hours} hour${hours > 1 ? "s" : ""} `;
-    if (minutes > 0) result += `${minutes} minute${minutes > 1 ? "s" : ""}`;
-    return result.trim();
-  }
-
-  function formatDateTime(isoString) {
-    const date = new Date(isoString);
-    return date.toLocaleString("en-US", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  }
+  useEffect(() => setFlightItineraries([]), [activeTab]);
 
   return (
     <>
@@ -101,10 +103,10 @@ const TabsContainer = () => {
                       .join(", ")}
                   </h2>
                   <div className="flex items-center justify-between">
-                    <p className="text-base font-medium text-green-600">
+                    <p className="text-base font-medium text-green-600 pr-3">
                       {offer.price.total} {offer.price.currency}
                     </p>
-                    {/* <span
+                    <span
                       className={`text-xs font-semibold px-2 py-1 rounded-full ${
                         travelClass === "BUSINESS"
                           ? "bg-blue-100 text-blue-700"
@@ -115,8 +117,8 @@ const TabsContainer = () => {
                           : "bg-gray-100 text-gray-700"
                       }`}
                     >
-                      {travelClass || "ECONOMY"}
-                    </span> */}
+                      {travelClass.charAt(0) || "E"}
+                    </span>
                   </div>
                 </div>
 
