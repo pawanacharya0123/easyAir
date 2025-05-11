@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import LocationInputField from "./sub-component/LocationInputField";
 
+const clientId = import.meta.env.VITE_AMADEUS_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_AMADEUS_CLIENT_SECRET;
+
 const RoundTripFlightSearchForm = ({ travelClass }) => {
   const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
@@ -20,9 +23,6 @@ const RoundTripFlightSearchForm = ({ travelClass }) => {
 
   useEffect(() => {
     const getAccessToken = async () => {
-      const clientId = process.env.REACT_APP_AMADEUS_CLIENT_ID;
-      const clientSecret = process.env.REACT_APP_AMADEUS_CLIENT_SECRET;
-
       const response = await fetch(
         "https://test.api.amadeus.com/v1/security/oauth2/token",
         {

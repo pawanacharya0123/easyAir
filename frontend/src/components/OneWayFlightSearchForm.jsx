@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import LocationInputField from "./sub-component/LocationInputField";
 
+const clientId = import.meta.env.VITE_AMADEUS_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_AMADEUS_CLIENT_SECRET;
+
+const getAirportCode = (fullString) => {
+  const match = fullString.match(/\(([^)]+)\)/);
+  return match ? match[1] : null;
+};
+
 const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
   const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
@@ -18,9 +26,6 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
 
   useEffect(() => {
     const getAccessToken = async () => {
-      const clientId = process.env.REACT_APP_AMADEUS_CLIENT_ID;
-      const clientSecret = process.env.REACT_APP_AMADEUS_CLIENT_SECRET;
-
       const response = await fetch(
         "https://test.api.amadeus.com/v1/security/oauth2/token",
         {
@@ -96,10 +101,16 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     console.log({ ...formData, travelClass: travelClass });
+    const originLocationCode = getAirportCode(formData.origin);
+    const destinationLocationCode = getAirportCode(formData.destination);
+    const adults = formData.travelers;
+    const departureDate = formData.departureDate;
+    const currencyCode = "CAD";
+
     const fetchItineraries = async () => {
       try {
         const response = await fetch(
-          "https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=SYD&destinationLocationCode=BKK&departureDate=2025-06-01&adults=1&max=10",
+          `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originLocationCode}&destinationLocationCode=${destinationLocationCode}&departureDate=${departureDate}&adults=${adults}&travelClass=${travelClass}&currencyCode=${currencyCode}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -108,7 +119,7 @@ const OneWayFlightSearchForm = ({ travelClass, setFlightItineraries }) => {
         );
         const result = await response.json();
         console.log(result);
-        setFlightItineraries(result.data);
+        setFlightItineraries(result);
       } catch (err) {
         console.error(`Error fetching ${field} airports:`, err);
       }
