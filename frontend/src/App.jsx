@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import RoundTripFlightSearchForm from "./components/RoundTripFlightSearchForm";
+import TabsContainer from "./components/TabsContainer";
+import Layout from "./pages/layout";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [startBooking, setStartBooking] = useState(false);
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Layout>
+      <div className="max-w-4xl mx-auto text-center">
+        <h2 className="text-2xl font-semibold mb-4">Welcome to AirBooking</h2>
+        <p className="mb-2">Find and book flights with ease.</p>
+        <p className="mb-2">Search from thousands of destinations.</p>
+        {!startBooking && (
+          <button
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+            onClick={() => setStartBooking(true)}
+          >
+            Start Booking
+          </button>
+        )}
+        {startBooking && <TabsContainer />}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Layout>
+    // <div className="min-h-screen bg-gray-100 py-10 px-4">
+    //   <FlightSearchForm />
+    // </div>
+  );
 }
 
-export default App
+export default App;
