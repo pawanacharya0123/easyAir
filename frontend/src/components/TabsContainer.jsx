@@ -55,8 +55,9 @@ const TabsContainer = () => {
           <div className="space-y-6">
             {flightItineraries.data.map((offer, index) => (
               <Itinerary
-                offer={offer}
+                key={index}
                 index={index}
+                offer={offer}
                 flightItineraries={flightItineraries}
                 travelClass={travelClass}
               />

@@ -19,7 +19,7 @@ function formatDuration(isoDuration) {
   return result.trim();
 }
 
-const Itinerary = ({ offer, index, flightItineraries, travelClass }) => {
+const Itinerary = ({ index, offer, flightItineraries, travelClass }) => {
   return (
     <div key={index} className="border rounded-2xl shadow-md p-6 bg-white">
       <div className="flex justify-between items-center mb-2">

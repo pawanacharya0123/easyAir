@@ -168,6 +168,7 @@ const RoundTripFlightSearchForm = ({
             type="number"
             name="travelers"
             min="1"
+            max="9"
             value={formData.travelers}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"

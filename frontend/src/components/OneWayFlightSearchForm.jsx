@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import LocationInputField from "./sub-component/LocationInputField";
-import useToken from "../hooks/useToken";
 import useAirportSuggestions from "../hooks/useAirportSuggestions";
 import useFlightSearch from "../hooks/useFlightSearch";
 import { TokenContext } from "../hooks/TokenContext";
@@ -16,7 +15,6 @@ const OneWayFlightSearchForm = ({
   formData,
   setFormData,
 }) => {
-  // const token = useToken();
   const token = useContext(TokenContext);
 
   const originSuggestions = useAirportSuggestions(formData.origin, token);
@@ -140,6 +138,7 @@ const OneWayFlightSearchForm = ({
             type="number"
             name="travelers"
             min="1"
+            max="9"
             value={formData.travelers}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"

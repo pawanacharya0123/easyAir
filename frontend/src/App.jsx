@@ -22,9 +22,6 @@ function App() {
         {startBooking && <TabsContainer />}
       </div>
     </Layout>
-    // <div className="min-h-screen bg-gray-100 py-10 px-4">
-    //   <FlightSearchForm />
-    // </div>
   );
 }
 
