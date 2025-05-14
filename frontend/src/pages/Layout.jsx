@@ -6,8 +6,8 @@ import useTokenFromFirebase from "../hooks/useTokenFromFirebase";
 import TokenContext from "../hooks/TokenContext";
 
 const Layout = ({ children }) => {
-  // const token = useToken();
-  const token = useTokenFromFirebase();
+  const token = useToken();
+  // const token = useTokenFromFirebase();
   return (
     <TokenContext.Provider value={token}>
       <div className="flex flex-col min-h-screen">
