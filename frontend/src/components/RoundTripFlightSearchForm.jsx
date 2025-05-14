@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import LocationInputField from "./sub-component/LocationInputField";
-import useToken from "../hooks/useToken";
 import useAirportSuggestions from "../hooks/useAirportSuggestions";
 import useFlightSearch from "../hooks/useFlightSearch";
 import { TokenContext } from "../hooks/TokenContext";
-
-const clientId = import.meta.env.VITE_AMADEUS_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_AMADEUS_CLIENT_SECRET;
 
 const getAirportCode = (fullString) => {
   const match = fullString.match(/\(([^)]+)\)/);
@@ -19,7 +15,6 @@ const RoundTripFlightSearchForm = ({
   formData,
   setFormData,
 }) => {
-  // const token = useToken();
   const token = useContext(TokenContext);
 
   const originSuggestions = useAirportSuggestions(formData.origin, token);
@@ -43,7 +38,7 @@ const RoundTripFlightSearchForm = ({
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    console.log({ ...formData, travelClass: travelClass });
+    // console.log({ ...formData, travelClass: travelClass });
 
     const originLocationCode = getAirportCode(formData.origin);
     const destinationLocationCode = getAirportCode(formData.destination);

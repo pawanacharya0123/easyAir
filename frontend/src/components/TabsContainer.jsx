@@ -51,6 +51,23 @@ const TabsContainer = () => {
         </div>
       </div>
       <div className="pt-4">
+        {flightItineraries &&
+          Array.isArray(flightItineraries.data) &&
+          flightItineraries.data.length === 0 && (
+            <div className="border rounded-2xl shadow-md p-6 bg-white">
+              <div className="flex justify-center items-center mb-2">
+                <h2 className="text-lg font-semibold text-gray-700">
+                  No flight itineraries available
+                </h2>
+              </div>
+              <div className="flex justify-center items-center mt-4">
+                <span className="text-sm font-medium text-gray-500">
+                  We couldn't find any flights for your search criteria. Try
+                  adjusting your filters or check back later.
+                </span>
+              </div>
+            </div>
+          )}
         {flightItineraries && flightItineraries.data && (
           <div className="space-y-6">
             {flightItineraries.data.map((offer, index) => (

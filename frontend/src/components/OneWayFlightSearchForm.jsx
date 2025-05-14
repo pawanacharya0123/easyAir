@@ -37,7 +37,7 @@ const OneWayFlightSearchForm = ({
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    console.log({ ...formData, travelClass: travelClass });
+    // console.log({ ...formData, travelClass: travelClass });
 
     const originLocationCode = getAirportCode(formData.origin);
     const destinationLocationCode = getAirportCode(formData.destination);
