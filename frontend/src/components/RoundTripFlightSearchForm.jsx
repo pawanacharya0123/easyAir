@@ -18,7 +18,7 @@ const RoundTripFlightSearchForm = ({
     token
   );
 
-  const { loading, searchFlights } = useFlightSearch(token);
+  const { loading, searchFlights, fieldError } = useFlightSearch(token);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -67,6 +67,7 @@ const RoundTripFlightSearchForm = ({
             onChange={handleChange}
             onSelect={handleSelect}
             suggestions={originSuggestions}
+            error={fieldError.origin}
           />
 
           <div className="w-fit flex items-end justify-center pb-1 mt-6">
@@ -105,6 +106,7 @@ const RoundTripFlightSearchForm = ({
             onChange={handleChange}
             onSelect={handleSelect}
             suggestions={destinationSuggestions}
+            error={fieldError.destination}
           />
         </div>
 

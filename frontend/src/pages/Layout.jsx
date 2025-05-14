@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-// import useToken from "../hooks/useToken";
+import useToken from "../hooks/useToken";
 import useTokenFromFirebase from "../hooks/useTokenFromFirebase";
 import TokenContext from "../hooks/TokenContext";
 
