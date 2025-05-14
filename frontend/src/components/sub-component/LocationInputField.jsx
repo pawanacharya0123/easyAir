@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useDebounce } from "use-debounce";
+import React, { useState } from "react";
 
 const LocationInputField = ({
   label,
@@ -8,6 +7,7 @@ const LocationInputField = ({
   onChange,
   onSelect,
   suggestions,
+  error,
 }) => {
   const [focused, setFocused] = useState(false);
 
@@ -23,9 +23,12 @@ const LocationInputField = ({
         onChange={onChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setTimeout(() => setFocused(false), 150)} // allow click to register
+        onClick={(e) => e.target.select()}
         placeholder="City or airport"
         autoComplete="off"
-        className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+        className={`w-full border ${
+          error ? "border-red-300" : "border-gray-300"
+        } rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm`}
       />
       {focused && suggestions.length > 0 && (
         <ul className="absolute z-10 bg-white w-full max-h-60 overflow-y-auto border border-gray-200 rounded-xl mt-1 shadow-lg text-xs ">

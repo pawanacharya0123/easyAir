@@ -4,11 +4,6 @@ import useAirportSuggestions from "../hooks/useAirportSuggestions";
 import useFlightSearch from "../hooks/useFlightSearch";
 import { TokenContext } from "../hooks/TokenContext";
 
-const getAirportCode = (fullString) => {
-  const match = fullString.match(/\(([^)]+)\)/);
-  return match ? match[1] : null;
-};
-
 const OneWayFlightSearchForm = ({
   travelClass,
   setFlightItineraries,
@@ -22,7 +17,7 @@ const OneWayFlightSearchForm = ({
     formData.destination,
     token
   );
-  const { loading, searchFlights } = useFlightSearch(token);
+  const { loading, searchFlights, fieldError } = useFlightSearch(token);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,14 +32,10 @@ const OneWayFlightSearchForm = ({
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    // console.log({ ...formData, travelClass: travelClass });
-
-    const originLocationCode = getAirportCode(formData.origin);
-    const destinationLocationCode = getAirportCode(formData.destination);
 
     const params = {
-      originCode: originLocationCode,
-      destinationCode: destinationLocationCode,
+      originCode: formData.origin,
+      destinationCode: formData.destination,
       departureDate: formData.departureDate,
       travelers: formData.travelers,
       travelClass,
@@ -74,6 +65,7 @@ const OneWayFlightSearchForm = ({
             onChange={handleChange}
             onSelect={handleSelect}
             suggestions={originSuggestions}
+            error={fieldError.origin}
           />
 
           <div className="w-fit flex items-end justify-center pb-1 mt-6">
@@ -112,6 +104,7 @@ const OneWayFlightSearchForm = ({
             onChange={handleChange}
             onSelect={handleSelect}
             suggestions={destinationSuggestions}
+            error={fieldError.destination}
           />
         </div>
 
@@ -125,7 +118,9 @@ const OneWayFlightSearchForm = ({
             min={new Date().toISOString().split("T")[0]}
             value={formData.departureDate}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+            className={`w-full border ${
+              fieldError.departureDate ? "border-red-300" : "border-gray-300"
+            } rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500`}
             required
           />
         </div>
@@ -141,7 +136,9 @@ const OneWayFlightSearchForm = ({
             max="9"
             value={formData.travelers}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+            className={`w-full border ${
+              fieldError.travelers ? "border-red-300" : "border-gray-300"
+            } rounded-xl px-3 py-2 focus:ring-blue-500 focus:border-blue-500`}
             required
           />
         </div>

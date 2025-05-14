@@ -4,11 +4,6 @@ import useAirportSuggestions from "../hooks/useAirportSuggestions";
 import useFlightSearch from "../hooks/useFlightSearch";
 import { TokenContext } from "../hooks/TokenContext";
 
-const getAirportCode = (fullString) => {
-  const match = fullString.match(/\(([^)]+)\)/);
-  return match ? match[1] : null;
-};
-
 const RoundTripFlightSearchForm = ({
   travelClass,
   setFlightItineraries,
@@ -38,14 +33,10 @@ const RoundTripFlightSearchForm = ({
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    // console.log({ ...formData, travelClass: travelClass });
-
-    const originLocationCode = getAirportCode(formData.origin);
-    const destinationLocationCode = getAirportCode(formData.destination);
 
     const params = {
-      originCode: originLocationCode,
-      destinationCode: destinationLocationCode,
+      originCode: formData.origin,
+      destinationCode: formData.destination,
       departureDate: formData.departureDate,
       returnDate: formData.returnDate,
       travelers: formData.travelers,
