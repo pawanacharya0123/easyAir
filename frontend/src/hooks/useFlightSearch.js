@@ -65,7 +65,7 @@ const useFlightSearch = (token) => {
       originLocationCode === null ||
       destinationLocationCode === null ||
       originLocationCode.length !== 3 ||
-      destinationLocationCode !== 3 ||
+      destinationLocationCode.length !== 3 ||
       travelers === null ||
       travelClass === null ||
       departureDate === null ||

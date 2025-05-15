@@ -3,6 +3,7 @@ import LocationInputField from "./sub-component/LocationInputField";
 import useAirportSuggestions from "../hooks/useAirportSuggestions";
 import useFlightSearch from "../hooks/useFlightSearch";
 import { TokenContext } from "../hooks/TokenContext";
+import LoadingOverlay from "./sub-component/LoadingOverlay";
 
 const RoundTripFlightSearchForm = ({
   travelClass,
@@ -50,11 +51,7 @@ const RoundTripFlightSearchForm = ({
 
   return (
     <div className="relative">
-      {loading && (
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-[4px] flex items-center justify-center z-50 rounded-2xl pointer-events-none">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-blue-500 border-gray-300"></div>
-        </div>
-      )}
+      {loading && <LoadingOverlay />}
       <form
         onSubmit={handleSearch}
         className="bg-white p-6 rounded-2xl shadow-md w-full max-w-6xl mx-auto space-y-4 md:space-y-0 md:grid md:grid-cols-5 gap-4"
