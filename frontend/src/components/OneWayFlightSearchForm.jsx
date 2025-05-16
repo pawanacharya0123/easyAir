@@ -2,8 +2,10 @@ import React, { useContext, useState } from "react";
 import LocationInputField from "./sub-component/LocationInputField";
 import useAirportSuggestions from "../hooks/useAirportSuggestions";
 import useFlightSearch from "../hooks/useFlightSearch";
+import useFlightSearchFromFirebase from "../hooks/useFlightSearchFromFirebase";
 import { TokenContext } from "../hooks/TokenContext";
 import LoadingOverlay from "./sub-component/LoadingOverlay";
+import useAirportSuggestionsFromFireBase from "../hooks/useAirportSuggestionsFromFireBase";
 
 const OneWayFlightSearchForm = ({
   travelClass,
@@ -13,12 +15,22 @@ const OneWayFlightSearchForm = ({
 }) => {
   const token = useContext(TokenContext);
 
-  const originSuggestions = useAirportSuggestions(formData.origin, token);
-  const destinationSuggestions = useAirportSuggestions(
+  // const originSuggestions = useAirportSuggestions(formData.origin, token);
+  // const destinationSuggestions = useAirportSuggestions(
+  //   formData.destination,
+  //   token
+  // );
+  const originSuggestions = useAirportSuggestionsFromFireBase(
+    formData.origin,
+    token
+  );
+  const destinationSuggestions = useAirportSuggestionsFromFireBase(
     formData.destination,
     token
   );
-  const { loading, searchFlights, fieldError } = useFlightSearch(token);
+
+  const { loading, searchFlights, fieldError } =
+    useFlightSearchFromFirebase(token);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
